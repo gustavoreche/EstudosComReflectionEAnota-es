@@ -1,5 +1,8 @@
 package sistema.modelo;
 
+import sistema.anotacao.NomeNoXml;
+
+@NomeNoXml("produto")
 public class Produto {
 	
 	private int ean;

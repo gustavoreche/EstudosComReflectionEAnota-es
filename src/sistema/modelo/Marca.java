@@ -1,5 +1,8 @@
 package sistema.modelo;
 
+import sistema.anotacao.NomeNoXml;
+
+@NomeNoXml("marca")
 public class Marca {
 	
 	private int id;
