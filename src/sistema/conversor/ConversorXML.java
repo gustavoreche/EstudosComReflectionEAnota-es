@@ -3,6 +3,8 @@ package sistema.conversor;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
+import sistema.anotacao.NomeNoXml;
+
 public class ConversorXML {
 	
 	private static final String TAG_LISTA = "<lista>";
@@ -33,14 +35,14 @@ public class ConversorXML {
 	}
 
 	private void trataObjetoParaXml(Object objeto, Class<?> classeObjeto, StringBuffer xml) throws IllegalAccessException {
-		String nomeClasse = classeObjeto.getName();
+		String nomeClasse = nomeDoAtributoPersonalizado(classeObjeto);
 		xml.append(TAG_ABERTURA + nomeClasse + TAG_FECHAMENTO);
 
 		for (Field atributo : classeObjeto.getDeclaredFields()) {
 			atributo.setAccessible(true);
-
+			
 			String nomeAtributo = atributo.getName();
-
+			
 			Object valorAtributo = atributo.get(objeto);
 
 			xml.append(TAG_ABERTURA + nomeAtributo + TAG_FECHAMENTO);
@@ -49,6 +51,18 @@ public class ConversorXML {
 		}
 
 		xml.append(TAG_ABERTURA_FECHA_TAG + nomeClasse + TAG_FECHAMENTO);
+	}
+
+	private String nomeDoAtributoPersonalizado(Class<?> classeObjeto) {
+		try {
+			String retorno = classeObjeto.getDeclaredAnnotation(NomeNoXml.class).value();
+			if(retorno != null && !retorno.isEmpty()) {
+				return retorno;
+			}
+		} catch (Exception e) {
+			System.out.println("Estourou exceção ao buscar o nome pela anotação!");
+		}
+		return classeObjeto.getName();
 	}
 
 	private void trataListaDeObjetoParaXml(Object objeto, StringBuffer xml) {
