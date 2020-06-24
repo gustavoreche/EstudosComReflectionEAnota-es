@@ -6,7 +6,7 @@ import java.util.Collection;
 import sistema.anotacao.NomeNoXml;
 
 public class ConversorXML {
-	
+
 	private static final String TAG_LISTA = "<lista>";
 	private static final String TAG_LISTA_FECHAMENTO = "</lista>";
 	private static final String TAG_ABERTURA = "<";
@@ -34,15 +34,16 @@ public class ConversorXML {
 		}
 	}
 
-	private void trataObjetoParaXml(Object objeto, Class<?> classeObjeto, StringBuffer xml) throws IllegalAccessException {
+	private void trataObjetoParaXml(Object objeto, Class<?> classeObjeto, StringBuffer xml)
+			throws IllegalAccessException {
 		String nomeClasse = nomeDoAtributoPersonalizado(classeObjeto);
 		xml.append(TAG_ABERTURA + nomeClasse + TAG_FECHAMENTO);
 
 		for (Field atributo : classeObjeto.getDeclaredFields()) {
 			atributo.setAccessible(true);
-			
+
 			String nomeAtributo = atributo.getName();
-			
+
 			Object valorAtributo = atributo.get(objeto);
 
 			xml.append(TAG_ABERTURA + nomeAtributo + TAG_FECHAMENTO);
@@ -54,13 +55,9 @@ public class ConversorXML {
 	}
 
 	private String nomeDoAtributoPersonalizado(Class<?> classeObjeto) {
-		try {
-			String retorno = classeObjeto.getDeclaredAnnotation(NomeNoXml.class).value();
-			if(retorno != null && !retorno.isEmpty()) {
-				return retorno;
-			}
-		} catch (Exception e) {
-			System.out.println("Estourou exceção ao buscar o nome pela anotação!");
+		NomeNoXml anotacao = classeObjeto.getDeclaredAnnotation(NomeNoXml.class);
+		if (anotacao != null) {
+			return !anotacao.value().isEmpty() ? anotacao.value() : classeObjeto.getName();
 		}
 		return classeObjeto.getName();
 	}
